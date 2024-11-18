@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "513210706608",
+    "project_id": "daysincolorsid-39af5",
+    "storage_bucket": "daysincolorsid-39af5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:513210706608:android:913b7b3e09a19d1583e975",
+        "android_client_info": {
+          "package_name": "com.example.daysincolors"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0nS_y8Y2nlHL8TvRWeDF2LIXwQ53l-AE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
