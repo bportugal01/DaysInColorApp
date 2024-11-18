@@ -65,7 +65,7 @@ fun LoginScreen(navController: NavController) {
 
     val autenticacao = FirebaseAuth.getInstance()
 
-    // Cor personalizada
+
     val corPersonalizada = Color(0xFFFF0099)
 
     // Credenciais psicólogo (fixas)
@@ -99,7 +99,7 @@ fun LoginScreen(navController: NavController) {
             Text(
                 text = "Entrar",
                 style = TextStyle(fontSize = 30.sp, color = Color(0xFFFF0099))
-            ) // Cor modificada
+            ) 
 
             Spacer(modifier = Modifier.height(15.dp))
 
@@ -173,33 +173,27 @@ fun LoginScreen(navController: NavController) {
 
 
 
-// Função que vai agendar a notificação
 fun agendarNotificacaoAleatoria(contexto: Context) {
     val autenticacao = FirebaseAuth.getInstance()
 
-    // Se o usuário estiver logado, agendamos a notificação
     if (autenticacao.currentUser != null) {
-        // Enviar notificação imediatamente
         val requisicaoNotificacaoImediata = OneTimeWorkRequestBuilder<TrabalhadorNotificacao>()
-            .setInitialDelay(1, TimeUnit.SECONDS) // Um pequeno delay para testes
+            .setInitialDelay(1, TimeUnit.SECONDS) 
             .build()
         WorkManager.getInstance(contexto).enqueue(requisicaoNotificacaoImediata)
 
-        // Agendando a notificação periódica (para quando o app não está em primeiro plano)
         val requisicaoNotificacaoPeriodica = PeriodicWorkRequestBuilder<TrabalhadorNotificacao>(1, TimeUnit.HOURS)
-            .setInitialDelay(1, TimeUnit.MINUTES)  // A notificação será disparada com um pequeno delay
+            .setInitialDelay(1, TimeUnit.MINUTES)  
             .build()
 
-        // Agendar trabalho periódico para envio de notificação
         WorkManager.getInstance(contexto).enqueueUniquePeriodicWork(
             "TrabalhadorNotificacao",
-            ExistingPeriodicWorkPolicy.REPLACE,  // Substitui qualquer trabalho anterior
+            ExistingPeriodicWorkPolicy.REPLACE,  
             requisicaoNotificacaoPeriodica
         )
     }
 }
 
-// Worker para enviar a notificação
 class TrabalhadorNotificacao(contexto: Context, parametrosTrabalho: WorkerParameters) : Worker(contexto, parametrosTrabalho) {
 
     override fun doWork(): Result {
@@ -212,7 +206,6 @@ class TrabalhadorNotificacao(contexto: Context, parametrosTrabalho: WorkerParame
         val idCanal = "canal_days_in_color"
         val gerenciadorNotificacao = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Criar o canal de notificação (necessário para Android 8.0+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val canal = NotificationChannel(
                 idCanal,
@@ -222,20 +215,17 @@ class TrabalhadorNotificacao(contexto: Context, parametrosTrabalho: WorkerParame
             gerenciadorNotificacao.createNotificationChannel(canal)
         }
 
-        // Criar a notificação
         val notificacao = NotificationCompat.Builder(applicationContext, idCanal)
-            .setSmallIcon(R.drawable.daysincolors) // Substitua pelo ícone de notificação do seu app
+            .setSmallIcon(R.drawable.daysincolors) 
             .setContentTitle("Days In Color")
             .setContentText("Como foi o seu dia? Registre agora no Days In Color!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        // Enviar a notificação com um ID aleatório
         gerenciadorNotificacao.notify(Random.nextInt(), notificacao)
     }
 }
 
-// Função de login que vai agendar a notificação ao entrar no app
 fun handleLogin(
     navController: NavController,
     nomeUsuario: String,
@@ -246,31 +236,27 @@ fun handleLogin(
     val usuarioCorretoPsico = "psicologo"
     val senhaCorretaPsico = "123"
 
-    // Verificação para psicólogo com credenciais fixas
     if (nomeUsuario == usuarioCorretoPsico && senha == senhaCorretaPsico) {
         navController.navigate("homePsico")
         Toast.makeText(contexto, "Login como psicólogo bem-sucedido!", Toast.LENGTH_SHORT).show()
 
-        // Agendar a notificação após o login
         agendarNotificacaoAleatoria(contexto)
         return
     }
 
-    // Lógica para paciente, autenticando com Firebase
     autenticacao.signInWithEmailAndPassword(nomeUsuario, senha)
         .addOnCompleteListener { tarefa ->
             if (tarefa.isSuccessful) {
                 val usuario: FirebaseUser? = autenticacao.currentUser
                 if (usuario != null) {
-                    // Sucesso na autenticação
+
                     navController.navigate("homePaciente")
                     Toast.makeText(contexto, "Login como paciente bem-sucedido!", Toast.LENGTH_SHORT).show()
 
-                    // Agendar a notificação após o login
                     agendarNotificacaoAleatoria(contexto)
                 }
             } else {
-                // Falha na autenticação
+
                 Toast.makeText(contexto, "Credenciais inválidas", Toast.LENGTH_SHORT).show()
             }
         }
