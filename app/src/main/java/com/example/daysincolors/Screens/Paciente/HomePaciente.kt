@@ -51,10 +51,8 @@ fun HomePacienteScreen(navController: NavController) {
     val user = auth.currentUser
     val userId = user?.uid
 
-    // Variável de estado para o nome do paciente
     var name by remember { mutableStateOf("Carregando...") }
 
-    // Carregar o nome do paciente logado do Firestore
     LaunchedEffect(userId) {
         userId?.let {
             db.collection("users").document(it).get()
@@ -69,34 +67,31 @@ fun HomePacienteScreen(navController: NavController) {
         }
     }
 
-    // Cor personalizada para o tema (rosa)
-    val customColor = Color(0xFFFF0099) // Rosa
+    val customColor = Color(0xFFFF0099)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8)
     ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Ícone de perfil como botão no canto superior direito
             IconButton(
-                onClick = { navController.navigate("perfilPaciente") }, // Navega para a tela de perfil
+                onClick = { navController.navigate("perfilPaciente") },
                 modifier = Modifier
-                    .size(60.dp) // Tamanho do ícone ajustado
-                    .align(Alignment.TopEnd) // Posiciona no canto superior direito
+                    .size(60.dp)
+                    .align(Alignment.TopEnd)
             ) {
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Ícone de perfil",
-                    modifier = Modifier.size(60.dp), // Tamanho ajustado do ícone
-                    tint = customColor // Cor rosa para o ícone
+                    modifier = Modifier.size(60.dp),
+                    tint = customColor
                 )
             }
 
-            // Conteúdo principal da tela
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -105,47 +100,43 @@ fun HomePacienteScreen(navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
 
-                // Logo acima do botão
                 Image(
-                    painter = painterResource(id = R.drawable.daysincolors), // Substitua 'logo' pelo nome real da sua logo no diretório drawable
+                    painter = painterResource(id = R.drawable.daysincolors),
                     contentDescription = "Logo",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp) // Ajuste o tamanho da logo conforme necessário
+                        .height(120.dp)
                         .padding(bottom = 32.dp)
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                // Saudação
                 Text(
-                    text = "Olá, $name", // Exibe o nome do paciente logado
+                    text = "Olá, $name",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = customColor // Cor rosa para o texto
+                    color = customColor
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Pergunta
                 Text(
                     text = "Como foi seu dia?",
                     fontSize = 20.sp,
-                    color = Color.Gray // Cor cinza suave para o texto
+                    color = Color.Gray
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Botão de registrar
                 Button(
-                    onClick = { navController.navigate("cadastro1") }, // Navega para a tela de testes
+                    onClick = { navController.navigate("cadastro1") },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .width(200.dp)
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = customColor) // Cor de fundo rosa
+                    colors = ButtonDefaults.buttonColors(containerColor = customColor)
                 ) {
-                    Text(text = "Registrar", fontSize = 18.sp, color = Color.White) // Texto branco no botão
+                    Text(text = "Registrar", fontSize = 18.sp, color = Color.White)
                 }
             }
         }
