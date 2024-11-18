@@ -74,7 +74,7 @@ fun LoginScreen(navController: NavController) {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8) 
     ) {
         // Lógica do formulário
         Column(
@@ -85,13 +85,13 @@ fun LoginScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Logo acima do botão
+
             Image(
-                painter = painterResource(id = R.drawable.daysincolors), // Substitua 'daysincolors' pelo nome real da sua logo no diretório drawable
+                painter = painterResource(id = R.drawable.daysincolors),
                 contentDescription = "Logo",
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp) // Ajuste o tamanho da logo conforme necessário
+                    .height(120.dp) 
                     .padding(bottom = 32.dp)
             )
             Spacer(modifier = Modifier.height(15.dp))
@@ -153,9 +153,9 @@ fun LoginScreen(navController: NavController) {
                     handleLogin(navController, nomeUsuario, senha, contexto, autenticacao)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF0099)) // Cor modificada
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF0099))
             ) {
-                Text("Entrar", color = Color.White) // Cor do texto
+                Text("Entrar", color = Color.White)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
