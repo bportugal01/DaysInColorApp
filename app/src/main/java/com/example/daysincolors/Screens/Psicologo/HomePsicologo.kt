@@ -34,76 +34,70 @@ import com.example.daysincolors.R
 @Composable
 fun HomePsicoScreen(navController: NavController) {
     val psicologoNome = "Dra. Marinês Romano"
-    // Cor personalizada para o tema (rosa)
-    val customColor = Color(0xFFFF0099) // Rosa
+    val customColor = Color(0xFFFF0099)
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Conteúdo principal da tela
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp), // Aplica o padding da Scaffold
-            color = Color(0xFFF8F8F8) // Fundo de cor suave
+                .padding(16.dp),
+            color = Color(0xFFF8F8F8)
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp), // Padding adicional, se necessário
+                    .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                // Logo acima do botão
                 Image(
-                    painter = painterResource(id = R.drawable.daysincolors), // Substitua 'daysincolors' pelo nome correto
+                    painter = painterResource(id = R.drawable.daysincolors),
                     contentDescription = "Logo",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(120.dp) // Ajuste o tamanho da logo conforme necessário
-                        .padding(bottom = 32.dp) // Adicionando espaçamento abaixo da logo
+                        .height(120.dp)
+                        .padding(bottom = 32.dp)
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                // Saudação com nome do psicólogo
                 Text(
                     text = "Olá, $psicologoNome!",
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
-                    color = customColor // Cor rosa para o texto
+                    color = customColor
                 )
 
-                Spacer(modifier = Modifier.height(30.dp)) // Ajuste no espaçamento entre o texto e o botão
+                Spacer(modifier = Modifier.height(30.dp))
 
-                // Botão para acessar os pacientes
                 Button(
-                    onClick = { navController.navigate("pacientes") }, // Navega para a tela de pacientes
+                    onClick = { navController.navigate("pacientes") },
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier
                         .width(200.dp)
                         .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = customColor) // Cor de fundo rosa
+                    colors = ButtonDefaults.buttonColors(containerColor = customColor)
                 ) {
                     Text(
                         text = "Meus Pacientes",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White) // Texto branco no botão
+                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
                     )
                 }
             }
         }
 
-        // Botão de logout no canto superior direito
         IconButton(
-            onClick = { navController.navigate("login") }, // Navega para a tela de login
+            onClick = { navController.navigate("login") },
             modifier = Modifier
                 .padding(16.dp)
-                .align(Alignment.TopEnd) // Posiciona no canto superior direito
+                .align(Alignment.TopEnd)
         ) {
             Icon(
-                imageVector = Icons.Default.ExitToApp,  // Ícone de logout
+                imageVector = Icons.Default.ExitToApp,
                 contentDescription = "Logout",
-                tint = Color(0xFFFF0099) // Cor do ícone
+                tint = Color(0xFFFF0099)
             )
         }
     }
