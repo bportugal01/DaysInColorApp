@@ -70,9 +70,6 @@ fun NavGraph(navController: NavHostController) {
             val registroId = backStackEntry.arguments?.getString("registroId")
             if (registroId != null) {
                 EditarScreen(navController = navController, registroId = registroId)
-            } else {
-                // Tratamento caso registroId seja nulo
-                // Exibir uma mensagem de erro ou redirecionar para outra tela, se necessário
             }
         }
 
@@ -88,7 +85,6 @@ fun NavGraph(navController: NavHostController) {
             PacientesScreen(navController = navController)
         }
 
-        // Adicionando a rota para a tela de Diários do Paciente
         composable(
             "diarios/{pacienteId}",
             arguments = listOf(navArgument("pacienteId") { type = NavType.StringType })
@@ -96,8 +92,6 @@ fun NavGraph(navController: NavHostController) {
             val pacienteId = backStackEntry.arguments?.getString("pacienteId")
             if (pacienteId != null) {
                 DiariosScreen(pacienteId = pacienteId, navController = navController)
-            } else {
-                // Tratamento caso pacienteId seja nulo
             }
         }
     }
