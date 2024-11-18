@@ -230,7 +230,7 @@ fun CadastroDaysScreen(navController: NavController) {
                                         "Dados registrados com sucesso",
                                         Toast.LENGTH_LONG
                                     ).show()
-                                    navController.navigate("consultar") // Volta para a tela anterior
+                                    navController.navigate("consultar")
                                 }
                                 .addOnFailureListener { e ->
                                     Toast.makeText(
@@ -256,11 +256,10 @@ fun CadastroDaysScreen(navController: NavController) {
             }
         }
 
-        // Exibe o Toast quando houver uma mensagem de erro
         errorMessage?.let {
             LaunchedEffect(it) {
                 Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                errorMessage = null  // Limpa a mensagem de erro após exibir o Toast
+                errorMessage = null  
             }
         }
     }
