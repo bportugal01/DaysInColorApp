@@ -49,43 +49,38 @@ import java.util.Locale
 @Composable
 fun ConsultarScreen(navController: NavController) {
     val context = LocalContext.current
-    val auth = FirebaseAuth.getInstance() // Firebase Auth para pegar o usuário logado
-    val firestore = FirebaseFirestore.getInstance() // Firebase Firestore
-    val user = auth.currentUser // Usuário logado
+    val auth = FirebaseAuth.getInstance()
+    val firestore = FirebaseFirestore.getInstance()
+    val user = auth.currentUser
 
-    // Estado para armazenar os registros e feedbacks
     val registros = remember { mutableStateOf<List<RegistroDia>>(emptyList()) }
     val feedbacks = remember { mutableStateOf<List<Feedback>>(emptyList()) }
     val isLoading = remember { mutableStateOf(true) }
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
-    // Carrega os registros e feedbacks do Firestore assim que a tela é composta
     LaunchedEffect(Unit) {
-        // Verifica se o usuário está logado
         user?.let { loggedInUser ->
-            val userId = loggedInUser.uid // Pegando o ID do usuário logado
+            val userId = loggedInUser.uid
 
-            // Carrega os registros do Firestore
             firestore.collection("users")
-                .document(userId) // Referência ao documento do usuário
-                .collection("diarios") // Coleção de diários dentro do documento do usuário
+                .document(userId)
+                .collection("diarios")
                 .get()
                 .addOnSuccessListener { result ->
                     val fetchedRegistros = result.map { document ->
-                        // Converte os dados do Firestore para o modelo de RegistroDia
                         val avaliacao = document.get("avaliacao")
                         val avaliacaoFloat = when (avaliacao) {
-                            is String -> avaliacao.toFloatOrNull() ?: 0f // Converte String para Float ou usa 0f
-                            is Number -> avaliacao.toFloat() // Converte Number para Float
-                            else -> 0f // Valor padrão caso o tipo não seja compatível
+                            is String -> avaliacao.toFloatOrNull() ?: 0f
+                            is Number -> avaliacao.toFloat()
+                            else -> 0f
                         }
 
                         RegistroDia(
-                            id = document.id, // ID agora é String
+                            id = document.id,
                             data = document.getString("data") ?: "",
                             cor = document.getString("cor") ?: "",
                             motivo = document.getString("motivo") ?: "",
-                            avaliacao = avaliacaoFloat // Aqui você usa o valor convertido corretamente
+                            avaliacao = avaliacaoFloat
                         )
                     }
                     registros.value = fetchedRegistros
@@ -96,15 +91,14 @@ fun ConsultarScreen(navController: NavController) {
                     isLoading.value = false
                 }
 
-            // Carrega os feedbacks do psicólogo
             firestore.collection("users")
                 .document(userId)
-                .collection("feedbacks") // Coleção de feedbacks do psicólogo
+                .collection("feedbacks")
                 .get()
                 .addOnSuccessListener { result ->
                     val fetchedFeedbacks = result.map { document ->
                         val timestamp = document.get("data") as? Long
-                        val feedbackDate = timestamp?.let { Date(it) } ?: Date() // Converte timestamp para Date
+                        val feedbackDate = timestamp?.let { Date(it) } ?: Date()
                         Feedback(
                             feedback = document.getString("feedback") ?: "",
                             data = feedbackDate
@@ -121,20 +115,17 @@ fun ConsultarScreen(navController: NavController) {
         }
     }
 
-    // Se houver um erro, exibe uma mensagem
     errorMessage.value?.let {
         LaunchedEffect(it) {
             Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-            errorMessage.value = null // Limpa a mensagem após exibir o Toast
+            errorMessage.value = null
         }
     }
 
-    // Envolvendo o conteúdo da tela com o Surface para o fundo suave
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8)
     ) {
-        // Se não houver registros, exibe uma mensagem
         if (registros.value.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -154,7 +145,6 @@ fun ConsultarScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                // Exibe a seção de registros com título "Meus Days in Colors"
                 item {
                     Text(
                         text = "Meus Days in Colors",
@@ -167,10 +157,9 @@ fun ConsultarScreen(navController: NavController) {
                         RegistroCard(
                             registro = registro,
                             onEditClick = {
-                                navController.navigate("editarPaciente/${registro.id}") // Corrigido para usar registro.id
+                                navController.navigate("editarPaciente/${registro.id}")
                             },
                             onDeleteClick = {
-                                // Ação de excluir
                                 user?.let { loggedInUser ->
                                     val userId = loggedInUser.uid
                                     firestore.collection("users")
@@ -179,7 +168,6 @@ fun ConsultarScreen(navController: NavController) {
                                         .document(registro.id)
                                         .delete()
                                         .addOnSuccessListener {
-                                            // Atualiza a lista de registros após a exclusão
                                             registros.value = registros.value.filterNot { it.id == registro.id }
                                             Toast.makeText(context, "Registro excluído com sucesso", Toast.LENGTH_SHORT).show()
                                         }
@@ -190,13 +178,10 @@ fun ConsultarScreen(navController: NavController) {
                             }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
-
-
                     }
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
                 }
 
-                // Exibe a seção de feedbacks com título "Feedbacks do Psicólogo"
                 item {
                     Text(
                         text = "Feedbacks do Psicólogo",
@@ -211,9 +196,9 @@ fun ConsultarScreen(navController: NavController) {
                                 .fillMaxWidth()
                                 .padding(8.dp),
                             elevation = CardDefaults.cardElevation(4.dp),
-                            border = BorderStroke(2.dp,  color = Color(0xFFFF0099)),
+                            border = BorderStroke(2.dp, color = Color(0xFFFF0099)),
                             shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White) // Fundo branco
+                            colors = CardDefaults.cardColors(containerColor = Color.White)
                         ) {
                             Column(
                                 modifier = Modifier
@@ -227,7 +212,7 @@ fun ConsultarScreen(navController: NavController) {
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
-                                    text = "Data: ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(feedback.data)}", // Formatação da data
+                                    text = "Data: ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(feedback.data)}",
                                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
                                     color = Color(0xFF616161)
                                 )
@@ -247,13 +232,10 @@ fun ConsultarScreen(navController: NavController) {
     }
 }
 
-
-
 data class Feedback(
     val feedback: String,
     val data: Date
 )
-
 
 @Composable
 fun RegistroCard(
@@ -265,7 +247,7 @@ fun RegistroCard(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8)
     ) {
         Card(
             modifier = Modifier
@@ -274,13 +256,12 @@ fun RegistroCard(
             elevation = CardDefaults.cardElevation(4.dp),
             border = BorderStroke(2.dp, Color(0xFFFF0099)),
             shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White) // Mantém o fundo branco
+            colors = CardDefaults.cardColors(containerColor = Color.White)
         ) {
             Column(
                 modifier = Modifier
                     .padding(16.dp)
             ) {
-                // Exibe o título do registro
                 Text(
                     text = "Registro de ${registro.data}",
                     style = MaterialTheme.typography.bodyLarge,
@@ -288,8 +269,6 @@ fun RegistroCard(
                     color = Color(0xFFFF0099)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-
-                // Exibe as informações do registro, incluindo a cor dinâmica para o texto "Cor"
                 Text(
                     text = "Cor: ${getColorName(registro.cor)} (${registro.cor})",
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp),
@@ -311,18 +290,16 @@ fun RegistroCard(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Botões de editar e excluir dentro de Cards
                 Row(
                     horizontalArrangement = Arrangement.End,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Card para o botão de editar
                     Card(
                         modifier = Modifier
                             .padding(8.dp)
-                            .width(50.dp), // Define uma largura fixa
+                            .width(50.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF0099) // Muda a cor do card para o rosa
+                            containerColor = Color(0xFFFF0099)
                         ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
@@ -331,13 +308,12 @@ fun RegistroCard(
                         }
                     }
 
-                    // Card para o botão de excluir
                     Card(
                         modifier = Modifier
                             .padding(8.dp)
-                            .width(50.dp), // Define uma largura fixa
+                            .width(50.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFF0099) // Muda a cor do card para o rosa
+                            containerColor = Color(0xFFFF0099)
                         ),
                         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                     ) {
@@ -351,7 +327,6 @@ fun RegistroCard(
     }
 }
 
-// Função que retorna a cor baseada na descrição textual
 fun getColorByLabel(label: String): Color {
     return when (label) {
         "Triste" -> Color(0xFF0008D1)
@@ -360,33 +335,20 @@ fun getColorByLabel(label: String): Color {
         "Normal" -> Color(0xFF737373)
         "Tranquilo" -> Color(0xFF7ED957)
         "Solitário" -> Color.Black
-        "Engraçado" -> Color(0xFFFF914D)
-        "Frustrante" -> Color(0xFFFF66C4)
-        else -> Color.Gray
+        "Engraçado" -> Color(0xFFFF8000)
+        else -> Color.Unspecified
     }
 }
 
-// Função que retorna o nome da cor para exibição
 fun getColorName(label: String): String {
     return when (label) {
-        "Triste" -> "Azul Escuro"
+        "Triste" -> "Azul"
         "Estressante" -> "Vermelho"
         "Animado" -> "Amarelo"
         "Normal" -> "Cinza"
-        "Tranquilo" -> "Verde Claro"
+        "Tranquilo" -> "Verde"
         "Solitário" -> "Preto"
         "Engraçado" -> "Laranja"
-        "Frustrante" -> "Rosa"
-        else -> "Indefinido"
+        else -> "Desconhecido"
     }
 }
-
-
-
-data class RegistroDia(
-    val id: String, // ID agora é String
-    val data: String,
-    val cor: String,
-    val motivo: String,
-    val avaliacao: Float // Avaliação agora é Float
-)
