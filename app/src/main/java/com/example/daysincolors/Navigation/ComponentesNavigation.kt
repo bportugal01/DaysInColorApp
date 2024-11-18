@@ -32,21 +32,16 @@ import androidx.core.view.WindowInsetsControllerCompat
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBar(navController: NavController, showBackButton: Boolean = false) {
-    val customColor = Color(0xFFFF0099) // Custom top bar color
-
+    val customColor = Color(0xFFFF0099)
     val context = LocalContext.current
     val window = (context as Activity).window
     val insetsController = WindowInsetsControllerCompat(window, window.decorView)
 
-    // Set status bar color and appearance
     insetsController.isAppearanceLightStatusBars = false
     window.statusBarColor = customColor.toArgb()
 
-    // Get current route
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
-    // Define the routes where the back button should appear
-    val routesWithBackButton = listOf("pacientes", "diarios/{pacienteId}") // Define the routes here
+    val routesWithBackButton = listOf("pacientes", "diarios/{pacienteId}")
 
     CenterAlignedTopAppBar(
         title = {
@@ -68,20 +63,17 @@ fun TopBar(navController: NavController, showBackButton: Boolean = false) {
             }
         },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = customColor // TopBar color matches the status bar
+            containerColor = customColor
         ),
         modifier = Modifier.fillMaxWidth()
     )
 }
 
-
-
-
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-    val focusManager = LocalFocusManager.current // Obtendo o gerenciador de foco
+    val focusManager = LocalFocusManager.current
 
     if (currentRoute != "login" && currentRoute != "cadastro" && currentRoute != "homePsico" && currentRoute != "detalhes" && currentRoute != "pacientes" && currentRoute != "detalhes2" && currentRoute != "weekDetails/{weekStartDate}" && currentRoute != "diarios/{pacienteId}") {
         val items = listOf(
@@ -91,7 +83,7 @@ fun BottomNavigationBar(navController: NavController) {
         )
 
         NavigationBar(
-            containerColor = Color(0xFFFF0099) // Cor modificada
+            containerColor = Color(0xFFFF0099)
         ) {
             items.forEach { item ->
                 NavigationBarItem(
@@ -102,7 +94,6 @@ fun BottomNavigationBar(navController: NavController) {
                         )
                     },
                     label = {
-                        // Alterando a cor da label com base na seleção e no foco
                         val isSelected = currentRoute == item.route
                         val labelColor = if (isSelected) Color.White else Color.White.copy(0.4f)
 
@@ -110,7 +101,6 @@ fun BottomNavigationBar(navController: NavController) {
                             text = item.title,
                             color = labelColor,
                             modifier = Modifier.onFocusChanged {
-                                // Limpar o foco se necessário
                                 if (it.isFocused) {
                                     focusManager.clearFocus()
                                 }
@@ -121,7 +111,7 @@ fun BottomNavigationBar(navController: NavController) {
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color.White,
                         unselectedIconColor = Color.White.copy(0.4f),
-                        indicatorColor = Color(0xFFFF0099) // Cor modificada
+                        indicatorColor = Color(0xFFFF0099)
                     ),
                     onClick = {
                         navController.navigate(item.route) {
