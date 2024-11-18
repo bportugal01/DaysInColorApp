@@ -486,8 +486,6 @@ fun formatDate(timestamp: Long): String {
     return sdf.format(Date(timestamp))
 }
 
-
-
 data class Diario(
     val data: String,
     val cor: String,
@@ -502,11 +500,9 @@ data class Feedback(
     val id: String
 )
 
-
 data class Paciente(
     val id: String,
     val name: String,
     val status: String,
     var diarios: MutableList<Diario> = mutableListOf()
 )
-
