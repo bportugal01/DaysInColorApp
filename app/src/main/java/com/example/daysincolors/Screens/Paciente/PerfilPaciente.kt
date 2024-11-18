@@ -58,19 +58,15 @@ fun PerfilScreen(navController: NavController) {
     val user = auth.currentUser
     val userId = user?.uid
 
-    // Variáveis de estado para os dados do perfil
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("") }
 
-    // Flags para editar
     val isEditing = remember { mutableStateOf(false) }
 
-    // Dialog para confirmar a exclusão
     val showDialog = remember { mutableStateOf(false) }
 
-    // Carregar os dados do usuário do Firestore
     LaunchedEffect(userId) {
         userId?.let {
             db.collection("users").document(it).get()
@@ -84,11 +80,11 @@ fun PerfilScreen(navController: NavController) {
         }
     }
 
-    val context = LocalContext.current // Obter o contexto do Composable
+    val context = LocalContext.current
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8)
     ) {
         Column(
             modifier = Modifier
@@ -96,7 +92,6 @@ fun PerfilScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ícone de conta acima do nome
             Icon(
                 imageVector = Icons.Default.AccountCircle,
                 contentDescription = "Ícone de Conta",
@@ -106,7 +101,6 @@ fun PerfilScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Título da tela
             Text(
                 text = "Perfil de ${name}",
                 fontSize = 32.sp,
@@ -125,7 +119,6 @@ fun PerfilScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo de Nome
             Text(
                 text = "Nome:",
                 fontSize = 16.sp,
@@ -139,7 +132,6 @@ fun PerfilScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Campo de Email
             Text(
                 text = "Email:",
                 fontSize = 16.sp,
@@ -153,7 +145,6 @@ fun PerfilScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Status do usuário
             Text(
                 text = "Status: ${status}",
                 fontSize = 18.sp,
@@ -163,18 +154,16 @@ fun PerfilScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botões de ação: Editar, Excluir, Sair em Cards
             Row(
                 horizontalArrangement = Arrangement.SpaceAround,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Card do botão de editar
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
                         .weight(1f),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFF0099) // Muda a cor do card para branco
+                        containerColor = Color(0xFFFF0099)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
@@ -183,7 +172,7 @@ fun PerfilScreen(navController: NavController) {
                             if (isEditing.value) {
                                 updateProfile(userId, name, email, senha, db, context)
                             }
-                            isEditing.value = !isEditing.value // Alterna entre editar e não editar
+                            isEditing.value = !isEditing.value
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -195,19 +184,18 @@ fun PerfilScreen(navController: NavController) {
                     }
                 }
 
-                // Card do botão de excluir
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
                         .weight(1f),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFF0099) // Muda a cor do card para branco
+                        containerColor = Color(0xFFFF0099)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     IconButton(
                         onClick = {
-                            showDialog.value = true // Mostra a confirmação de exclusão
+                            showDialog.value = true
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -219,20 +207,19 @@ fun PerfilScreen(navController: NavController) {
                     }
                 }
 
-                // Card do botão de sair
                 Card(
                     modifier = Modifier
                         .padding(8.dp)
                         .weight(1f),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFF0099) // Muda a cor do card para branco
+                        containerColor = Color(0xFFFF0099)
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
                 ) {
                     IconButton(
                         onClick = {
-                            auth.signOut() // Sair do Firebase
-                            navController.navigate("login") // Navega para a tela de login
+                            auth.signOut()
+                            navController.navigate("login")
                         },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -254,7 +241,6 @@ fun PerfilScreen(navController: NavController) {
         }
     }
 
-    // Confirmar exclusão
     if (showDialog.value) {
         AlertDialog(
             onDismissRequest = {
@@ -263,27 +249,24 @@ fun PerfilScreen(navController: NavController) {
             title = {
                 Text(
                     text = "Confirmar Exclusão",
-                    color = Color(0xFFFF0099) // Título rosa
+                    color = Color(0xFFFF0099)
                 )
             },
             text = {
                 Text(
                     text = "Você tem certeza que deseja desativar sua conta?",
-                    color = Color.Black // Cor do texto
+                    color = Color.Black
                 )
             },
             confirmButton = {
                 TextButton(
                     onClick = {
                         userId?.let {
-                            // Atualizar o status do usuário para "Inativo"
                             val userRef = db.collection("users").document(it)
                             userRef.update("status", "Inativo")
                                 .addOnSuccessListener {
-                                    // Exclui a conta após atualizar o status
                                     auth.currentUser?.delete()?.addOnSuccessListener {
                                         navController.navigate("login")
-                                        // Exibe o Toast aqui dentro de um Composable
                                         Toast.makeText(context, "Conta desativada com sucesso", Toast.LENGTH_SHORT).show()
                                     }
                                 }
@@ -293,7 +276,7 @@ fun PerfilScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "Desativar",
-                        color = Color(0xFFFF0099) // Cor do botão confirmar
+                        color = Color(0xFFFF0099)
                     )
                 }
             },
@@ -305,21 +288,19 @@ fun PerfilScreen(navController: NavController) {
                 ) {
                     Text(
                         text = "Cancelar",
-                        color = Color.Gray // Cor do botão cancelar
+                        color = Color.Gray
                     )
                 }
             },
-            containerColor = Color(0xFFF0F0F0), // Cor de fundo do AlertDialog
-            textContentColor = Color.Black // Cor do conteúdo
+            containerColor = Color(0xFFF0F0F0),
+            textContentColor = Color.Black
         )
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileField(label: String, value: String, isEditing: Boolean, onValueChange: (String) -> Unit) {
-    // Cor personalizada
     val corPersonalizada = Color(0xFFFF0099)
 
     Column(
@@ -365,11 +346,9 @@ fun updateProfile(userId: String?, name: String, email: String, senha: String, d
 
     userRef.update(updatedData as Map<String, Any>)
         .addOnSuccessListener {
-            // Exibe o Toast aqui dentro de um Composable
             Toast.makeText(context, "Perfil atualizado com sucesso", Toast.LENGTH_SHORT).show()
         }
         .addOnFailureListener {
-            // Exibe o Toast aqui dentro de um Composable
             Toast.makeText(context, "Erro ao atualizar perfil", Toast.LENGTH_SHORT).show()
         }
 }
