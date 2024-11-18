@@ -58,7 +58,6 @@ import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
 
-
 @Composable
 fun PacientesScreen(navController: NavController) {
     var isLoading by remember { mutableStateOf(true) }
@@ -67,7 +66,7 @@ fun PacientesScreen(navController: NavController) {
     val db = FirebaseFirestore.getInstance()
 
     LaunchedEffect(Unit) {
-        db.collection("users")  // Nome da coleção de pacientes
+        db.collection("users")
             .get()
             .addOnSuccessListener { result ->
                 pacientes = result.map { document ->
@@ -93,7 +92,6 @@ fun PacientesScreen(navController: NavController) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Título da tela
             Text(
                 text = "Meus Pacientes",
                 fontSize = 25.sp,
@@ -102,14 +100,12 @@ fun PacientesScreen(navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Carregando indicador
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     color = Color.Black
                 )
             } else {
-                // Verifica se há pacientes ou exibe uma mensagem
                 if (pacientes.isEmpty()) {
                     Text(
                         text = "Nenhum paciente registrado.",
@@ -118,7 +114,6 @@ fun PacientesScreen(navController: NavController) {
                         style = MaterialTheme.typography.bodyLarge
                     )
                 } else {
-                    // Lista de pacientes
                     PacientesList(pacientes = pacientes, navController = navController)
                 }
             }
@@ -129,7 +124,7 @@ fun PacientesScreen(navController: NavController) {
 @Composable
 fun PacientesList(pacientes: List<Paciente>, navController: NavController) {
     val sortedPacientes = pacientes
-        .sortedWith(compareBy({ it.status != "Ativo" }, { it.name })) // Ordena Ativos primeiro e depois por nome
+        .sortedWith(compareBy({ it.status != "Ativo" }, { it.name }))
 
     LazyColumn {
         items(sortedPacientes) { paciente ->
@@ -142,16 +137,17 @@ fun PacientesList(pacientes: List<Paciente>, navController: NavController) {
 fun PacienteItem(paciente: Paciente, navController: NavController) {
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
-                .clip(RoundedCornerShape(12.dp)), // Cantos arredondados
+                .clip(RoundedCornerShape(12.dp)),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White // Muda a cor do card para branco
-            ),  border = BorderStroke(2.dp, Color(0xFFFF0099)), // Borda rosa
+                containerColor = Color.White
+            ),
+            border = BorderStroke(2.dp, Color(0xFFFF0099))
         ) {
             Row(
                 modifier = Modifier
@@ -160,34 +156,29 @@ fun PacienteItem(paciente: Paciente, navController: NavController) {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Informações do paciente
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = paciente.name,
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = Color(0xFF363636) // Cor rosa vibrante para o nome
+                        color = Color(0xFF363636)
                     )
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // Status com cor dinâmica (verde para Ativo, vermelho para Inativo)
                     Text(
                         text = "Status: ${paciente.status}",
                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
-                        color = if (paciente.status == "Ativo") Color(0xFF51A904) else Color(
-                            0xFFA92104
-                        )
+                        color = if (paciente.status == "Ativo") Color(0xFF51A904) else Color(0xFFA92104)
                     )
                 }
 
-                // Botão para navegar para os diários do paciente
                 Button(
                     onClick = { navController.navigate("diarios/${paciente.id}") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF0099)), // Cor rosa para o botão
-                    shape = RoundedCornerShape(8.dp) // Bordas arredondadas
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFF0099)),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = "Ver Diários",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White) // Texto branco para o botão
+                        style = MaterialTheme.typography.bodyLarge.copy(color = Color.White)
                     )
                 }
             }
@@ -205,11 +196,9 @@ fun DiariosScreen(pacienteId: String, navController: NavController) {
     var showFeedbackField by remember { mutableStateOf(true) }
 
     val db = FirebaseFirestore.getInstance()
-
     val customColor = Color(0xFFFF0099)
 
     LaunchedEffect(pacienteId) {
-        // Carregar diários do paciente
         db.collection("users").document(pacienteId).collection("diarios")
             .get()
             .addOnSuccessListener { result ->
@@ -234,7 +223,6 @@ fun DiariosScreen(pacienteId: String, navController: NavController) {
                 isLoading = false
             }
 
-        // Carregar feedbacks do paciente
         db.collection("users").document(pacienteId).collection("feedbacks")
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -247,112 +235,108 @@ fun DiariosScreen(pacienteId: String, navController: NavController) {
                         data = document.getLong("data") ?: 0L,
                         psicologoNome = document.getString("psicologoNome") ?: "Desconhecido",
                         id = document.id
-                    ) ?: Feedback("", 0L, "", "")
+                    )
                 } ?: emptyList()
             }
     }
 
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp), // Apply content padding here
-            color = Color(0xFFF8F8F8) // Cor de fundo suave
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        color = Color(0xFFF8F8F8)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                // Título da tela
-                Text(
-                    text = "Diários",
-                    fontSize = 25.sp,
-                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF363636) // Texto preto para contraste
+            Text(
+                text = "Diários",
+                fontSize = 25.sp,
+                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                color = Color(0xFF363636)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.CenterHorizontally),
-                        color = Color.Black
-                    )
+            } else {
+                if (diarios.isEmpty()) {
+                    Text("Não há diários", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
                 } else {
-                    if (diarios.isEmpty()) {
-                        Text("Não há diários", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
-                    } else {
-                        LazyColumn {
-                            items(diarios) { diario ->
-                                DiarioItem(diario)
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
+                    LazyColumn {
+                        items(diarios) { diario ->
+                            DiarioItem(diario)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
 
-                            // Divider entre Diários e Feedbacks
-                            item {
-                                Divider(
-                                    modifier = Modifier.padding(vertical = 16.dp),
-                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                                    thickness = 1.dp
-                                )
-                            }
-                            item {
-                                Text(
-                                    text = "Feedback do Psicólogo", fontSize = 25.sp,
-                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                    color = Color(0xFF363636) // Texto preto para contraste
-                                )
+                        item {
+                            Divider(
+                                modifier = Modifier.padding(vertical = 16.dp),
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                                thickness = 1.dp
+                            )
+                        }
+                        item {
+                            Text(
+                                text = "Feedback do Psicólogo",
+                                fontSize = 25.sp,
+                                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                color = Color(0xFF363636)
+                            )
 
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
 
-                            items(feedbacks) { feedback ->
-                                FeedbackCard(feedback, pacienteId, db, onFeedbackDeleted = {
-                                    showFeedbackField = true
-                                })
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
+                        items(feedbacks) { feedback ->
+                            FeedbackCard(feedback, pacienteId, db, onFeedbackDeleted = {
+                                showFeedbackField = true
+                            })
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
 
-                            item {
-                                // Campo de adicionar feedback
-                                if (showFeedbackField) {
-                                    OutlinedTextField(
-                                        value = newFeedbackText,
-                                        onValueChange = { newFeedbackText = it },
-                                        label = { Text("Adicionar Feedback", color = Color.Gray) },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                                            focusedBorderColor = customColor,
-                                            unfocusedBorderColor = customColor.copy(alpha = 0.4f),
-                                            cursorColor = customColor
-                                        )
+                        item {
+                            if (showFeedbackField) {
+                                OutlinedTextField(
+                                    value = newFeedbackText,
+                                    onValueChange = { newFeedbackText = it },
+                                    label = { Text("Adicionar Feedback", color = Color.Gray) },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                                        focusedBorderColor = customColor,
+                                        unfocusedBorderColor = customColor.copy(alpha = 0.4f),
+                                        cursorColor = customColor
                                     )
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                                    Button(
-                                        onClick = {
-                                            if (newFeedbackText.isNotBlank()) {
-                                                val feedback = Feedback(
-                                                    feedback = newFeedbackText,
-                                                    data = System.currentTimeMillis(),
-                                                    psicologoNome = "Dra. Marinês Romano", // Nome do psicólogo
-                                                    id = ""
-                                                )
+                                Button(
+                                    onClick = {
+                                        if (newFeedbackText.isNotBlank()) {
+                                            val feedback = Feedback(
+                                                feedback = newFeedbackText,
+                                                data = System.currentTimeMillis(),
+                                                psicologoNome = "Dra. Marinês Romano",
+                                                id = ""
+                                            )
 
-                                                // Salvar no Firestore
-                                                val newFeedbackRef = db.collection("users").document(pacienteId).collection("feedbacks").document()
-                                                newFeedbackRef.set(feedback)
-                                                    .addOnSuccessListener {
-                                                        newFeedbackText = ""
-                                                        showFeedbackField = false
-                                                    }
-                                                    .addOnFailureListener {
-                                                        Log.w("Firestore", "Erro ao salvar feedback", it)
-                                                    }
-                                            }
-                                        },
-                                        colors = ButtonDefaults.buttonColors(containerColor = customColor),
-                                        shape = RoundedCornerShape(8.dp)
-                                    ) {
-                                        Text("Salvar", color = Color.White)
-                                    }
+                                            val newFeedbackRef = db.collection("users").document(pacienteId).collection("feedbacks").document()
+                                            newFeedbackRef.set(feedback)
+                                                .addOnSuccessListener {
+                                                    newFeedbackText = ""
+                                                    showFeedbackField = false
+                                                }
+                                                .addOnFailureListener {
+                                                    Log.w("Firestore", "Erro ao salvar feedback", it)
+                                                }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = customColor),
+                                    shape = RoundedCornerShape(8.dp)
+                                ) {
+                                    Text("Salvar", color = Color.White)
                                 }
                             }
                         }
@@ -361,51 +345,53 @@ fun DiariosScreen(pacienteId: String, navController: NavController) {
             }
         }
     }
-
-
+}
 
 @Composable
 fun DiarioItem(diario: Diario) {
     val contentColor = Color(0xFF616161)
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
-            border = BorderStroke(2.dp, Color(0xFFFF0099)), // Borda rosa
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White) // Fundo branco
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            border = BorderStroke(2.dp, Color(0xFFFF0099))
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // Exibe o título do diário
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 Text(
                     text = "Data: ${diario.data}",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFFF0099)
+                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                    color = Color(0xFF363636)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-                // Exibe as informações do diário
-                Text(
-                    text = "Cor: ${diario.cor}",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
-                    color = contentColor
-                )
-                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = "Motivo: ${diario.motivo}",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
+                    style = MaterialTheme.typography.bodyMedium,
                     color = contentColor
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "Cor: ${diario.cor}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = contentColor
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
                     text = "Avaliação: ${diario.avaliacao}",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
+                    style = MaterialTheme.typography.bodyMedium,
                     color = contentColor
                 )
             }
@@ -413,142 +399,88 @@ fun DiarioItem(diario: Diario) {
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedbackCard(feedback: Feedback, pacienteId: String, db: FirebaseFirestore, onFeedbackDeleted: () -> Unit) {
-    var feedbackText by remember { mutableStateOf(feedback.feedback) }
-    var isEditing by remember { mutableStateOf(false) }
-
+fun FeedbackCard(
+    feedback: Feedback,
+    pacienteId: String,
+    db: FirebaseFirestore,
+    onFeedbackDeleted: () -> Unit
+) {
     val customColor = Color(0xFFFF0099)
-    val contentColor = Color(0xFF616161)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF8F8F8) // Fundo de cor suave
+        color = Color(0xFFF8F8F8)
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
-            elevation = CardDefaults.cardElevation(4.dp),
-            border = BorderStroke(2.dp, Color(0xFFFF0099)), // Borda rosa
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = Color.White) // Fundo branco
+                .padding(8.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            border = BorderStroke(2.dp, customColor)
         ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                // Exibe o título do feedback
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
                 Text(
-                    text = "Feedback da ${feedback.psicologoNome}",
-                    style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFFFF0099)
+                    text = feedback.feedback,
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                    color = Color(0xFF363636)
                 )
+                Spacer(modifier = Modifier.height(4.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
+                val dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM, Locale.getDefault())
+                val formattedDate = dateFormat.format(Date(feedback.data))
 
                 Text(
-                    text = "Data: ${formatDate(feedback.data)}",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
-                    color = contentColor
+                    text = "Psicólogo: ${feedback.psicologoNome}",
+                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Medium),
+                    color = Color(0xFF7B7B7B)
                 )
+                Spacer(modifier = Modifier.height(4.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                if (isEditing) {
-                    // Campo de texto para edição do feedback
-                    OutlinedTextField(
-                        value = feedbackText,
-                        onValueChange = { feedbackText = it },
-                        label = { Text("Editar Feedback") },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            focusedBorderColor = customColor,
-                            unfocusedBorderColor = customColor.copy(alpha = 0.4f),
-                            cursorColor = customColor
-                        )
-                    )
-                } else {
-                    // Exibe o texto do feedback
-                    Text(
-                        text = feedbackText,
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 15.sp),
-                        color = contentColor
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Data: $formattedDate",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF7B7B7B)
+                )
 
                 Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    if (isEditing) {
-                        // Botões para salvar ou cancelar a edição
-                        Button(
-                            onClick = {
-                                db.collection("users").document(pacienteId)
-                                    .collection("feedbacks").document(feedback.id)
-                                    .update("feedback", feedbackText)
-                                    .addOnSuccessListener {
-                                        isEditing = false
-                                    }
-                                    .addOnFailureListener {
-                                        Log.e("Firestore", "Erro ao atualizar feedback", it)
-                                    }
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFFF0099),
-                                contentColor = Color.White     // Cor do texto
-                            )
-                        ) {
-                            Text("Salvar")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = {
-                                isEditing = false
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFFFF0099),   // Cor de fundo do botão
-                                contentColor = Color.White     // Cor do texto
-                            )
-                        ) {
-                            Text("Cancelar")
-                        }
-
-                    } else {
-                        // Ícones para editar ou excluir o feedback
-                        IconButton(onClick = { isEditing = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Editar",
-                                tint = Color.Black
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        IconButton(onClick = {
-                            db.collection("users").document(pacienteId).collection("feedbacks")
-                                .document(feedback.id).delete()
+                    IconButton(
+                        onClick = {
+                            db.collection("users").document(pacienteId)
+                                .collection("feedbacks").document(feedback.id)
+                                .delete()
                                 .addOnSuccessListener {
+                                    Log.d("Firestore", "Feedback excluído com sucesso.")
                                     onFeedbackDeleted()
                                 }
                                 .addOnFailureListener {
-                                    Log.e("Firestore", "Erro ao excluir feedback", it)
+                                    Log.w("Firestore", "Erro ao excluir feedback.", it)
                                 }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Excluir",
-                                tint = Color.Black
-                            )
                         }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Deletar Feedback",
+                            tint = Color(0xFFFF4B4B)
+                        )
                     }
                 }
             }
         }
     }
 }
+
 fun formatDate(timestamp: Long): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
