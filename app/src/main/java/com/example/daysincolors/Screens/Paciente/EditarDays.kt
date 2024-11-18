@@ -72,7 +72,7 @@ fun EditarScreen(navController: NavHostController, registroId: String) {
         "Frustrante" to Color(0xFFFF66C4)
     )
 
-    // Carrega os dados do registro quando a tela é composta
+ 
     LaunchedEffect(registroId) {
         user?.let { loggedInUser ->
             val userId = loggedInUser.uid
@@ -240,7 +240,7 @@ fun EditarScreen(navController: NavHostController, registroId: String) {
                                     "data", selectedDate,
                                     "cor", selectedColor,
                                     "motivo", motivoCor.text,
-                                    "avaliacao", sliderPosition // Passando sliderPosition como Float
+                                    "avaliacao", sliderPosition 
                                 )
                                 .addOnSuccessListener {
                                     Toast.makeText(context, "Alterações salvas", Toast.LENGTH_SHORT).show()
